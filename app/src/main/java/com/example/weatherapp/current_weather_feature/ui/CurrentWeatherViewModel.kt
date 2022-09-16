@@ -46,7 +46,8 @@ class CurrentWeatherViewModel @Inject constructor(
         currentWeather.postValue(Resource.Loading())
         try {
             val response = weatherRepository.getCurrentWeather(query)
-            saveCurrentWeather(response.body()!!)
+            if(response.body()!!.error == null)
+                saveCurrentWeather(response.body()!!)
             currentWeather.postValue(handleCurrentWeatherResponse(response))
         } catch (t: Throwable) {
             when (t) {

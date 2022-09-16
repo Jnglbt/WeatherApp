@@ -2,6 +2,7 @@ package com.example.weatherapp.current_weather_feature.domain.models
 
 import androidx.room.Embedded
 import androidx.room.Entity
+import java.io.Serializable
 
 @Entity(
     tableName = "weather_responses",
@@ -9,7 +10,8 @@ import androidx.room.Entity
 )
 
 data class CurrentWeatherResponse(
+    @Embedded val error: ErrorInfo?,
     @Embedded val current: CurrentWeather,
     @Embedded val location: Location,
     @Embedded val request: RequestData
-) : java.io.Serializable
+) : Serializable

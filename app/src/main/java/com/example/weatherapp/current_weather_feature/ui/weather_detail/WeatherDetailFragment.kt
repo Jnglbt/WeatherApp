@@ -27,7 +27,7 @@ class WeatherDetailFragment : Fragment(R.layout.fragment_weather_detail), OnMapR
 
     lateinit var binding: FragmentWeatherDetailBinding
 
-    var isLoading = false
+    private var isLoading = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -50,19 +50,24 @@ class WeatherDetailFragment : Fragment(R.layout.fragment_weather_detail), OnMapR
                 is Resource.Success -> {
                     hideProgressBar()
                     response.data?.let { data ->
-
-                        binding.tvName.text = data.location.name
-                        binding.tvCountry.text = data.location.country
-                        binding.tvRegion.text = data.location.region
-                        binding.tvTimezone.text = data.location.timezone_id
-                        binding.tvLocalTime.text = data.location.localtime
-                        binding.tvTemperature.text = "${data.current.temperature}C"
-                        binding.tvWindSpeed.text = data.current.wind_speed.toString()
-                        binding.tvWindDir.text = data.current.wind_dir
-                        binding.tvHumidity.text = data.current.humidity.toString()
-                        position =
-                            LatLng(data.location.lat.toDouble(), data.location.lon.toDouble())
-                        moveCameraToLocation(map)
+                        println(data)
+                        if (data.error != null) {
+                            Toast.makeText(activity, "An error ${data.error.code}: ${data.error.info}", Toast.LENGTH_LONG)
+                                .show()
+                        } else {
+                            binding.tvName.text = data.location.name
+                            binding.tvCountry.text = data.location.country
+                            binding.tvRegion.text = data.location.region
+                            binding.tvTimezone.text = data.location.timezone_id
+                            binding.tvLocalTime.text = data.location.localtime
+                            binding.tvTemperature.text = "${data.current.temperature}C"
+                            binding.tvWindSpeed.text = data.current.wind_speed.toString()
+                            binding.tvWindDir.text = data.current.wind_dir
+                            binding.tvHumidity.text = data.current.humidity.toString()
+                            position =
+                                LatLng(data.location.lat.toDouble(), data.location.lon.toDouble())
+                            moveCameraToLocation(map)
+                        }
                     }
                 }
                 is Resource.Error -> {
