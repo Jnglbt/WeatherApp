@@ -49,15 +49,6 @@ class WeatherDetailFragment : Fragment(R.layout.fragment_weather_detail), OnMapR
                 is Resource.Success -> {
                     hideProgressBar()
                     response.data?.let { data ->
-                        println(data)
-                        if (data.error != null) {
-                            Toast.makeText(
-                                activity,
-                                "An error ${data.error.code}: ${data.error.info}",
-                                Toast.LENGTH_LONG
-                            )
-                                .show()
-                        } else {
                             binding.tvName.text = data.location.name
                             binding.tvCountry.text = data.location.country
                             binding.tvRegion.text = data.location.region
@@ -73,7 +64,6 @@ class WeatherDetailFragment : Fragment(R.layout.fragment_weather_detail), OnMapR
                             position =
                                 LatLng(data.location.lat.toDouble(), data.location.lon.toDouble())
                             moveCameraToLocation(map)
-                        }
                     }
                 }
                 is Resource.Error -> {
