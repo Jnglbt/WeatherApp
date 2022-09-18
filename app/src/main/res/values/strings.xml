@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">WeatherApp</string>
     <string name="google_maps_key"></string>
+    <string name="search">Search</string>
+    <string name="enter_place">Enter place</string>
+    <string name="google_map">googleMap</string>
+    <string name="temp_in_c">%d c</string>
 </resources>
