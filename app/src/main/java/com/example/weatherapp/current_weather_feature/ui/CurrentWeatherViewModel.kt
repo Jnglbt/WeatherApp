@@ -29,7 +29,8 @@ class CurrentWeatherViewModel @Inject constructor(
     val currentWeather: MutableLiveData<Resource<CurrentWeatherResponse>> = MutableLiveData()
     var currentWeatherResponse: CurrentWeatherResponse? = null
 
-    fun getCurrentWeather(query: String) = viewModelScope.launch {
+    fun getCurrentWeather(query: String) = viewModelScope.launch() {
+
         try {
             if (hasInternetConnection())
                 safeCurrentWeatherCall(query)
@@ -42,12 +43,9 @@ class CurrentWeatherViewModel @Inject constructor(
     }
 
     private suspend fun safeCurrentWeatherCall(query: String) {
-
         currentWeather.postValue(Resource.Loading())
         try {
             val response = weatherRepository.getCurrentWeather(query)
-            if(response.body()!!.error == null)
-                saveCurrentWeather(response.body()!!)
             currentWeather.postValue(handleCurrentWeatherResponse(response))
         } catch (t: Throwable) {
             when (t) {
@@ -60,13 +58,14 @@ class CurrentWeatherViewModel @Inject constructor(
     private fun handleCurrentWeatherResponse(
         response: Response<CurrentWeatherResponse>
     ): Resource<CurrentWeatherResponse> {
-        if (response.isSuccessful) {
+        if (response.body()!!.error == null && response.isSuccessful) {
             response.body()?.let { result ->
                 currentWeatherResponse = result
+                saveCurrentWeather(result)
                 return Resource.Success(currentWeatherResponse ?: result)
             }
         }
-        return Resource.Error(response.message())
+        return Resource.Error(response.body()!!.error?.info ?: response.message())
     }
 
     fun getCurrentWeatherFromDB(query: String): Resource<CurrentWeatherResponse> {
@@ -82,19 +81,18 @@ class CurrentWeatherViewModel @Inject constructor(
         weatherRepository.saveCurrentWeather(response)
     }
 
-//    fun getSavedWeather() = viewModelScope.launch {
-//        Log.d("CurrentWeather", "get saved ${weatherRepository.getSavedWeather()}")
-//        weatherRepository.getSavedWeather()
-//    }
-
     fun getSavedQueries(): List<String> = runBlocking {
         weatherRepository.getSavedQueries()
     }
 
-
-    fun nukeTable() = viewModelScope.launch {
-        weatherRepository.nukeTable()
+    fun getSimilarQueries(text: String): List<String> = runBlocking {
+        weatherRepository.getSimilarQueries(text)
     }
+
+
+//    fun nukeTable() = viewModelScope.launch {
+//        weatherRepository.nukeTable()
+//    }
 
     private fun hasInternetConnection(): Boolean {
         val connectivityManager =

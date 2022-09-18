@@ -20,6 +20,16 @@ class Converters {
             listOf()
         }
     }
+
+    @TypeConverter
+    fun fromFloat(value: Float): String {
+        return Gson().toJson(value)
+    }
+
+    @TypeConverter
+    fun toFloat(value: String): Float {
+        return Gson().fromJson<Float>(value)
+    }
 }
 
 private fun <T> Gson.fromJson(json: String) =

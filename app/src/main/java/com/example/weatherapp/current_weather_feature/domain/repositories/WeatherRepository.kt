@@ -9,11 +9,11 @@ interface WeatherRepository {
 
     suspend fun saveCurrentWeather(response: CurrentWeatherResponse)
 
-    suspend fun getSavedWeather() : List<CurrentWeatherResponse>
-
     suspend  fun getSavedWeatherByQuery(text: String): CurrentWeatherResponse
 
     suspend fun getSavedQueries() : List<String>
+
+    suspend fun getSimilarQueries(text: String): List<String>
 
     suspend fun nukeTable()
 }

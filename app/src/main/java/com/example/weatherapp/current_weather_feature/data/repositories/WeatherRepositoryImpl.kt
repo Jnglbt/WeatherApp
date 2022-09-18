@@ -18,12 +18,13 @@ class WeatherRepositoryImpl @Inject constructor(
     override suspend fun saveCurrentWeather(response: CurrentWeatherResponse) =
         db.currentWeatherDao.insertResponse(response)
 
-    override suspend fun getSavedWeather() = db.currentWeatherDao.getSavedWeather()
-
     override suspend fun getSavedWeatherByQuery(text: String): CurrentWeatherResponse =
         db.currentWeatherDao.getSavedWeatherByQuery("$text%")
 
     override suspend fun getSavedQueries(): List<String> = db.currentWeatherDao.getSavedQueries()
+
+    override suspend fun getSimilarQueries(text: String): List<String> =
+        db.currentWeatherDao.getSimilarQueries("%$text%")
 
     override suspend fun nukeTable() = db.currentWeatherDao.nukeTable()
 }

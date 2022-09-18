@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import com.example.weatherapp.R
 import com.example.weatherapp.databinding.FragmentWeatherDetailBinding
 import com.example.weatherapp.current_weather_feature.other.Resource
@@ -22,12 +23,10 @@ import dagger.hilt.android.AndroidEntryPoint
 class WeatherDetailFragment : Fragment(R.layout.fragment_weather_detail), OnMapReadyCallback {
 
     private val viewModel: CurrentWeatherViewModel by activityViewModels()
-
     private var position = LatLng(0.0, 0.0)
+    private var isLoading = false
 
     lateinit var binding: FragmentWeatherDetailBinding
-
-    private var isLoading = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -52,7 +51,11 @@ class WeatherDetailFragment : Fragment(R.layout.fragment_weather_detail), OnMapR
                     response.data?.let { data ->
                         println(data)
                         if (data.error != null) {
-                            Toast.makeText(activity, "An error ${data.error.code}: ${data.error.info}", Toast.LENGTH_LONG)
+                            Toast.makeText(
+                                activity,
+                                "An error ${data.error.code}: ${data.error.info}",
+                                Toast.LENGTH_LONG
+                            )
                                 .show()
                         } else {
                             binding.tvName.text = data.location.name
@@ -60,7 +63,10 @@ class WeatherDetailFragment : Fragment(R.layout.fragment_weather_detail), OnMapR
                             binding.tvRegion.text = data.location.region
                             binding.tvTimezone.text = data.location.timezone_id
                             binding.tvLocalTime.text = data.location.localtime
-                            binding.tvTemperature.text = "${data.current.temperature}C"
+                            binding.tvTemperature.text = String.format(
+                                getString(R.string.temp_in_c),
+                                data.current.temperature
+                            )
                             binding.tvWindSpeed.text = data.current.wind_speed.toString()
                             binding.tvWindDir.text = data.current.wind_dir
                             binding.tvHumidity.text = data.current.humidity.toString()
@@ -76,6 +82,7 @@ class WeatherDetailFragment : Fragment(R.layout.fragment_weather_detail), OnMapR
                         Toast.makeText(activity, "An error occurred: $message", Toast.LENGTH_LONG)
                             .show()
                     }
+                    findNavController().popBackStack()
                 }
                 is Resource.Loading -> {
                     showProgressBar()
